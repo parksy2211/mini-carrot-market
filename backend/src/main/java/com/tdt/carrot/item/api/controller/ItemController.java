@@ -27,7 +27,7 @@ public class ItemController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AuthUser user = (AuthUser) authentication.getPrincipal(); // 필터에서 넣어준 principal
 
-        Long itemId = itemService.createItem(user.userId(), req);
+        Long itemId = itemService.createItem(user.getUserId(), req);
 
         return ResponseEntity.status(201).body(java.util.Map.of("itemId", itemId));
     }
