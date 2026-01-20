@@ -1,24 +1,22 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
+import { Navigate, Route, Routes } from "react-router-dom";
+import TopBar from "./components/TopBar";
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
 import MyPage from "./pages/MyPage";
-import Layout from "./components/Layout";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
+    <div className="app">
+      <TopBar />
+
+      <main className="container">
+        <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-        </Route>
-
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/me" element={<MyPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
   );
 }

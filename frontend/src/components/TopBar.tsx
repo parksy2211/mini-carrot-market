@@ -1,106 +1,54 @@
-import React, { useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
-export default function TopBar({ onSearch }: { onSearch?: (q: string) => void }) {
-  const [open, setOpen] = useState(false);
+export default function TopBar() {
+  const nav = useNavigate();
+  const location = useLocation();
   const [q, setQ] = useState("");
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 0);
-    } else {
-      setQ("");
-    }
-  }, [open]);
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    // 홈에서만 검색 반영하려고 querystring으로 이동
+    const params = new URLSearchParams();
+    if (q.trim()) params.set("q", q.trim());
+    nav(`/${params.toString() ? `?${params.toString()}` : ""}`);
+  };
 
-  function submit() {
-    onSearch?.(q.trim());
-  }
-
-  function clearAndClose() {
-    setQ("");
-    onSearch?.("");
-    setOpen(false);
-  }
+  // 홈이 아닐 때도 검색창은 보이되, 검색하면 홈으로 이동하게 함
+  const isHome = location.pathname === "/";
 
   return (
-    <header style={styles.header}>
-      <div style={styles.left}>
-        {!open ? (
-          <>
-            🍊 <strong>Mini Carrot</strong>
-          </>
-        ) : (
+    <header className="topbar">
+      <div className="topbarInner">
+        <div className="brand" onClick={() => nav("/")}>
+          <span className="brandLogo">🥕</span>
+          <span className="brandText">Mini Carrot</span>
+        </div>
+
+        <form className="search" onSubmit={onSubmit}>
           <input
-            ref={inputRef}
+            className="searchInput"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") submit();
-              if (e.key === "Escape") clearAndClose();
-            }}
-            placeholder="상품을 검색하세요"
-            style={styles.input}
+            placeholder={isHome ? "상품 검색" : "검색하면 홈으로 이동"}
           />
-        )}
-      </div>
-      <div style={styles.right}>
-        <button
-          aria-label="search"
-          style={styles.iconBtn}
-          onClick={() => {
-            if (!open) setOpen(true);
-            else {
-              submit();
-            }
-          }}
-        >
-          🔍
-        </button>
-        {open ? (
-          <button aria-label="close" style={styles.iconBtn} onClick={clearAndClose}>
-            ✖
+          <button className="searchBtn" type="submit">
+            검색
           </button>
-        ) : (
-          <>
-            <button aria-label="notifications" style={styles.iconBtn}>🔔</button>
-            <button aria-label="more" style={styles.iconBtn}>☰</button>
-          </>
-        )}
+        </form>
+
+        <nav className="nav">
+          <NavLink to="/" className={({ isActive }) => `navBtn ${isActive ? "active" : ""}`}>
+            홈
+          </NavLink>
+          <NavLink to="/chat" className={({ isActive }) => `navBtn ${isActive ? "active" : ""}`}>
+            채팅
+          </NavLink>
+          <NavLink to="/me" className={({ isActive }) => `navBtn ${isActive ? "active" : ""}`}>
+            마이
+          </NavLink>
+        </nav>
       </div>
     </header>
   );
 }
-
-const styles = {
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "12px 16px",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
-    position: "sticky" as const,
-    top: 0,
-    background: "var(--bg, transparent)",
-    zIndex: 10,
-  },
-  left: { fontSize: 18 },
-  right: { display: "flex", gap: 8 },
-  iconBtn: {
-    background: "transparent",
-    border: "none",
-    color: "inherit",
-    fontSize: 18,
-    cursor: "pointer",
-  },
-  input: {
-    width: 280,
-    maxWidth: "60vw",
-    padding: "6px 10px",
-    borderRadius: 8,
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "transparent",
-    color: "inherit",
-    fontSize: 15,
-  },
-};

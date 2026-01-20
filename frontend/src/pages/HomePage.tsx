@@ -1,82 +1,59 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useOutletContext } from "react-router-dom";
-import ProductCard from "../components/ProductCard";
-import ProductDetail from "../components/ProductDetail";
-import { fetchProducts, type Product } from "../api/productApi";
-import BottomNav from "../components/BottomNav";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+
+type Product = {
+  id: number;
+  title: string;
+  price: number;
+  location: string;
+  imageUrl?: string;
+};
+
+const mockProducts: Product[] = Array.from({ length: 18 }).map((_, i) => ({
+  id: i + 1,
+  title: `상품 ${i + 1}`,
+  price: Math.floor(Math.random() * 90000) + 10000,
+  location: "서울 • 방금 전",
+  imageUrl: "",
+}));
+
+const formatWon = (n: number) => `${n.toLocaleString("ko-KR")}원`;
 
 export default function HomePage() {
-  const { searchQuery } = useOutletContext<{ searchQuery: string }>();
+  const [sp] = useSearchParams();
+  const q = (sp.get("q") ?? "").trim().toLowerCase();
 
-  const [items, setItems] = useState<Product[]>([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [selected, setSelected] = useState<Product | null>(null);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    // reset and load first page whenever search changes
-    setItems([]);
-    setPage(1);
-    setHasMore(true);
-    load(1, searchQuery);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
-
-  useEffect(() => {
-    if (!sentinelRef.current) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !loading && hasMore) {
-            load(page + 1, searchQuery);
-          }
-        });
-      },
-      { root: null, rootMargin: "200px" }
-    );
-    io.observe(sentinelRef.current);
-    return () => io.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sentinelRef.current, loading, hasMore, page, searchQuery]);
-
-  async function load(nextPage: number, query?: string) {
-    if (loading) return;
-    setLoading(true);
-    try {
-      const res = await fetchProducts(nextPage, 10);
-      const itemsToAdd = query && query.trim() ? res.items.filter((it) => it.name.includes(query)) : res.items;
-      setItems((s) => [...s, ...itemsToAdd]);
-      setHasMore(res.hasMore);
-      setPage(nextPage);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const products = useMemo(() => {
+    if (!q) return mockProducts;
+    return mockProducts.filter((p) => p.title.toLowerCase().includes(q));
+  }, [q]);
 
   return (
-    <div>
-      <div style={{ padding: 12 }}>
-        <h2>판매 상품</h2>
-        <div style={{ marginTop: 12 }}>
-          {items.map((p) => (
-            <ProductCard key={p.id} product={p} onClick={setSelected} />
-          ))}
-          {items.length === 0 && !loading && <p>상품이 없습니다.</p>}
-
-          <div ref={sentinelRef} style={{ height: 1 }} />
-
-          {loading && <p style={{ textAlign: "center" }}>로딩중…</p>}
-          {!hasMore && <p style={{ textAlign: "center" }}>모든 상품을 불러왔습니다.</p>}
-        </div>
+    <section>
+      <div className="pageHeader">
+        <h1 className="pageTitle">상품</h1>
+        <p className="pageDesc">{q ? `검색어: "${q}" • 결과 ${products.length}개` : "최신 상품 목록"}</p>
       </div>
 
-      <BottomNav />
+      <div className="grid">
+        {products.map((p) => (
+          <article key={p.id} className="card">
+            <div className="thumb">
+              <div className="thumbInner">🖼️</div>
+            </div>
 
-      <ProductDetail product={selected} onClose={() => setSelected(null)} />
-    </div>
+            <div className="cardBody">
+              <div className="cardTitle">{p.title}</div>
+              <div className="cardPrice">{formatWon(p.price)}</div>
+              <div className="cardMeta">{p.location}</div>
+            </div>
+
+            <button className="cardAction" type="button">
+              상세보기
+            </button>
+          </article>
+        ))}
+      </div>
+    </section>
   );
-} 
+}
