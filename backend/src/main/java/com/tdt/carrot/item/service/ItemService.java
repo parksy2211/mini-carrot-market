@@ -1,6 +1,8 @@
 package com.tdt.carrot.item.service;
 
+import com.tdt.carrot.item.api.dto.ItemCardResponse;
 import com.tdt.carrot.item.api.dto.ItemCreateRequest;
+import com.tdt.carrot.item.api.dto.ItemDetailResponse;
 import com.tdt.carrot.item.domain.Item;
 import com.tdt.carrot.item.repository.ItemRepository;
 import com.tdt.carrot.user.domain.User;
@@ -11,6 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,20 +35,59 @@ public class ItemService {
         User seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new EntityNotFoundException(("User not found. id=" + sellerId)));
 
-        Item item = new Item(req.getTitle(), req.getPrice(), req.getDescription(), seller);
+        Item item = new Item(req.getTitle(), req.getPrice(), req.getRegion(), req.getDescription(), seller);
         Item saved = itemRepository.save(item);
         return saved.getId();
     }
 
-    // 목록 조회 (무한 스크롤: page/size 방식)
-    public Page<Item> getItems(int page, int size) {
-        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        return itemRepository.findAll(pageable);
+    private String toTimeAgo(LocalDateTime createdAt) {
+        LocalDateTime now = LocalDateTime.now();
+
+        long minutes = Duration.between(createdAt, now).toMinutes();
+        if (minutes < 1) return "방금 전";
+        if (minutes < 60) return minutes + "분 전";
+
+        long hours = Duration.between(createdAt, now).toHours();
+        if (hours < 24) return hours + "시간 전";
+
+        long days = Duration.between(createdAt, now).toDays();
+        return days + "일 전";
     }
 
     // 상세 조회
-    public Item getItem(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Item not found. id=" + itemId));
+    @Transactional(readOnly = true)
+    public ItemDetailResponse getItemDetail(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+        String timeAgo = toTimeAgo(item.getCreatedAt());
+
+        return new ItemDetailResponse(
+                item.getId(),
+                item.getTitle(),
+                item.getPrice(),
+                item.getRegion(),
+                timeAgo,
+                item.getSeller().getName(),
+                item.getDescription()
+        );
     }
+
+    // 목록 조회
+    @Transactional(readOnly = true)
+    public Page<ItemCardResponse> getItemCards(int page, int size) {
+        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        return itemRepository.findAll(pageable).map(item -> {
+            String timeAgo = toTimeAgo(item.getCreatedAt());
+            return new ItemCardResponse(
+                    item.getId(),
+                    item.getTitle(),
+                    item.getPrice(),
+                    item.getRegion(),
+                    timeAgo
+            );
+        });
+    }
+
 }

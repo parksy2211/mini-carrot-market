@@ -37,6 +37,8 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+
+
     // JPA용
     protected User() {
     }

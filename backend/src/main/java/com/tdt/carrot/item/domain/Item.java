@@ -31,14 +31,18 @@ public class Item {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
+    @Column(nullable = false, length = 50)
+    private String region;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Item(String title, Integer price, String description, User seller) {
+    public Item(String title, Integer price,  String region, String description, User seller) {
         this.title = title;
         this.price = price;
         this.description = description;
         this.seller = seller;
+        this.region = region;
         this.createdAt = LocalDateTime.now();
     }
 }
