@@ -1,11 +1,10 @@
 import { type FormEvent, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { login } from "../api/authApi";
 import { setTokens } from "../auth/tokenStore";
 import { styles } from "../styles/authStyles";
 
 export default function LoginPage() {
-  const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -35,10 +34,8 @@ export default function LoginPage() {
       setTokens(res.accessToken, res.refreshToken);
 
       setOkMsg("로그인 성공!");
-      // TODO: 메인 페이지 만들면 이동
-      // nav("/home");
-    } catch (err: any) {
-      setError(err?.message ?? "로그인 실패");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "로그인 실패");
     } finally {
       setLoading(false);
     }
