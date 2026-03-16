@@ -318,3 +318,159 @@ a { color: inherit; text-decoration: none; }
   .nav { justify-content: flex-start; }
   .chatLayout { grid-template-columns: 1fr; }
 }
+
+.primaryBtn,
+.ghostBtn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primaryBtn {
+  border: 1px solid rgba(255,122,0,0.45);
+  background: rgba(255,122,0,0.15);
+  color: var(--text);
+}
+
+.ghostBtn {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+}
+
+.mypageLoginPanel,
+.profileCard,
+.myItemsSection {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.03);
+}
+
+.mypageLoginPanel {
+  padding: 24px;
+  display: grid;
+  gap: 12px;
+  max-width: 760px;
+}
+
+.mypageLoginPanel h2 {
+  margin: 0;
+}
+
+.mypageLoginPanel p {
+  margin: 0;
+  color: var(--sub);
+}
+
+.profileCard {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.profileLabel {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.profileValue {
+  margin-top: 6px;
+  font-weight: 800;
+}
+
+.statsGrid {
+  margin-top: 14px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.statCard {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.statLabel {
+  color: var(--sub);
+  font-size: 13px;
+}
+
+.statValue {
+  margin-top: 8px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.myItemsSection {
+  margin-top: 14px;
+  padding: 16px;
+}
+
+.myItemsTitle {
+  margin: 0;
+}
+
+.myItemsDesc {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.myItemList {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.myItemRow {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.myItemMeta {
+  margin-top: 6px;
+  color: var(--sub);
+  font-size: 13px;
+}
+
+.myItemPrice {
+  font-weight: 900;
+  color: rgba(255, 204, 128, 0.95);
+}
+
+.errorBox {
+  margin-top: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 120, 120, 0.3);
+  background: rgba(255, 120, 120, 0.09);
+  padding: 10px 12px;
+  color: #ffcaca;
+}
+
+@media (max-width: 860px) {
+  .profileCard {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .myItemRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

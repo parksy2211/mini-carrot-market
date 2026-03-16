@@ -32,10 +32,13 @@ export async function apiFetch<TResponse, TBody = unknown>(
   const data = text ? safeJsonParse(text) : null;
 
   if (!res.ok) {
+    const apiError =
+      data && typeof data === "object"
+        ? (data as { message?: unknown; error?: unknown })
+        : null;
+
     const message =
-      (data && typeof data === "object" && ("message" in data || "error" in data)
-        ? String((data as any).message ?? (data as any).error)
-        : text) || `요청 실패 (${res.status})`;
+      (apiError ? String(apiError.message ?? apiError.error ?? "") : text) || `요청 실패 (${res.status})`;
     throw new Error(message);
   }
 

@@ -40,8 +40,8 @@ export default function SignupPage() {
       await signup({ name, email, nickname, phone, password });
 
       setOkMsg("회원가입 완료! 로그인 해주세요.");
-    } catch (err: any) {
-      setError(err?.message ?? "회원가입 실패");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "회원가입 실패");
     } finally {
       setLoading(false);
     }
