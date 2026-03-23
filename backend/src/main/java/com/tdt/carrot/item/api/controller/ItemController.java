@@ -39,25 +39,11 @@ public class ItemController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        return itemService.getItems(page, size).map(
-                item -> new ItemCardResponse(
-                        item.getId(),
-                        item.getTitle(),
-                        item.getPrice(),
-                        item.getSeller().getName()
-                ));
+        return itemService.getItemCards(page, size);
     }
 
     @GetMapping("/{itemId}")
     public ItemDetailResponse getItemDetail(@PathVariable Long itemId) {
-        var item = itemService.getItem(itemId);
-
-        return new ItemDetailResponse(
-                item.getId(),
-                item.getTitle(),
-                item.getPrice(),
-                item.getSeller().getName(),
-                item.getDescription()
-        );
+        return itemService.getItemDetail(itemId);
     }
 }

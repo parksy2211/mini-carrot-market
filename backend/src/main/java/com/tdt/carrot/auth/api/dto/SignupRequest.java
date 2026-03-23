@@ -1,4 +1,4 @@
-package com.tdt.carrot.auth.dto;
+package com.tdt.carrot.auth.api.dto;
 
 import lombok.Getter;
 

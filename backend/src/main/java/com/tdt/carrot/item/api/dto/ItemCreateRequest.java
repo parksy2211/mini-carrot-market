@@ -9,4 +9,5 @@ public class ItemCreateRequest {
     private String title;
     private Integer price;
     private String description;
+    private String region;
 }

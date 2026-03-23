@@ -6,8 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ItemCardResponse {
-    private Long itemId;
-    private String title;
-    private Integer price;
-    private String sellerName;
+    private final Long itemId;
+    private final String title;
+    private final Integer price;
+    private final String region;
+    private final String timeAgo;
 }

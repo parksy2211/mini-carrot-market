@@ -1,13 +1,16 @@
 package com.tdt.carrot.auth.service;
 
-import com.tdt.carrot.auth.dto.LoginRequest;
-import com.tdt.carrot.auth.dto.LoginResponse;
-import com.tdt.carrot.auth.dto.SignupRequest;
+import com.tdt.carrot.auth.api.dto.LoginRequest;
+import com.tdt.carrot.auth.api.dto.LoginResponse;
+import com.tdt.carrot.auth.api.dto.SignupRequest;
 import com.tdt.carrot.auth.jwt.JwtProvider;
+import com.tdt.carrot.shop.domain.Shop;
+import com.tdt.carrot.shop.repository.ShopRepository;
 import com.tdt.carrot.user.domain.User;
 import com.tdt.carrot.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -15,13 +18,16 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final ShopRepository shopRepository;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, ShopRepository shopRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.shopRepository = shopRepository;
     }
 
+    @Transactional
     // 회원가입
     public void signup(SignupRequest request) {
         // 1) 이메일 중복 체크
@@ -46,8 +52,11 @@ public class AuthService {
                 hashedPassword
         );
 
-        // 저장
-        userRepository.save(user);
+        // 5) 저장
+        User savedUser = userRepository.save(user);
+
+        // 6) Shop 자동 생성 (닉네임은 User.nickname 사용)
+        shopRepository.save(new Shop(savedUser));
     }
 
     // 로그인

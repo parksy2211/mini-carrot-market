@@ -1,8 +1,8 @@
-package com.tdt.carrot.auth.controller;
+package com.tdt.carrot.auth.api.controller;
 
-import com.tdt.carrot.auth.dto.LoginRequest;
-import com.tdt.carrot.auth.dto.LoginResponse;
-import com.tdt.carrot.auth.dto.SignupRequest;
+import com.tdt.carrot.auth.api.dto.LoginRequest;
+import com.tdt.carrot.auth.api.dto.LoginResponse;
+import com.tdt.carrot.auth.api.dto.SignupRequest;
 import com.tdt.carrot.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
