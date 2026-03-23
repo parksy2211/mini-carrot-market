@@ -37,7 +37,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    // ✅ 1) 토큰이 유효한지 검사 (맞으면 true, 틀리면 false)
+    // 1) 토큰이 유효한지 검사 (맞으면 true, 틀리면 false)
     public boolean validate(String token) {
         try {
             parseClaims(token); // 여기서 서명/만료 체크가 같이 됨
@@ -47,13 +47,13 @@ public class JwtProvider {
         }
     }
 
-    // ✅ 2) 토큰에서 userId 꺼내기
+    // 2) 토큰에서 userId 꺼내기
     public Long getUserId(String token) {
         Claims claims = parseClaims(token);
         return Long.parseLong(claims.getSubject());
     }
 
-    // ✅ 3) 토큰에서 email 꺼내기
+    // 3) 토큰에서 email 꺼내기
     public String getEmail(String token) {
         Claims claims = parseClaims(token);
         return claims.get("email", String.class);

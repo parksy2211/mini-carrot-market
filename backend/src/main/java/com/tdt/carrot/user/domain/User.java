@@ -37,8 +37,6 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-
-
     // JPA용
     protected User() {
     }
@@ -52,5 +50,9 @@ public class User {
         this.password = password;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

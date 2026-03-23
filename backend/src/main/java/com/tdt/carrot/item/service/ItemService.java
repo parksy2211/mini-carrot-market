@@ -1,5 +1,6 @@
 package com.tdt.carrot.item.service;
 
+import com.tdt.carrot.global.util.TimeAgoUtil;
 import com.tdt.carrot.item.api.dto.ItemCardResponse;
 import com.tdt.carrot.item.api.dto.ItemCreateRequest;
 import com.tdt.carrot.item.api.dto.ItemDetailResponse;
@@ -40,27 +41,13 @@ public class ItemService {
         return saved.getId();
     }
 
-    private String toTimeAgo(LocalDateTime createdAt) {
-        LocalDateTime now = LocalDateTime.now();
-
-        long minutes = Duration.between(createdAt, now).toMinutes();
-        if (minutes < 1) return "방금 전";
-        if (minutes < 60) return minutes + "분 전";
-
-        long hours = Duration.between(createdAt, now).toHours();
-        if (hours < 24) return hours + "시간 전";
-
-        long days = Duration.between(createdAt, now).toDays();
-        return days + "일 전";
-    }
-
     // 상세 조회
     @Transactional(readOnly = true)
     public ItemDetailResponse getItemDetail(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Item not found"));
 
-        String timeAgo = toTimeAgo(item.getCreatedAt());
+        String timeAgo = TimeAgoUtil.from(item.getCreatedAt());
 
         return new ItemDetailResponse(
                 item.getId(),
@@ -79,7 +66,7 @@ public class ItemService {
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         return itemRepository.findAll(pageable).map(item -> {
-            String timeAgo = toTimeAgo(item.getCreatedAt());
+            String timeAgo = TimeAgoUtil.from(item.getCreatedAt());
             return new ItemCardResponse(
                     item.getId(),
                     item.getTitle(),
